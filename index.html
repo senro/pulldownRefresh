@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pulldownRefresh2</title>
+    <style>
+        /**{*/
+            /*margin: 0;*/
+            /*padding: 0;*/
+        /*}*/
+        .pulldownRefresh{
+
+        }
+        .pulldownRefresh-container{
+
+        }
+        .pulldownRefresh-caption{
+            display: none;
+            text-align: center;
+        }
+
+        .icon {
+            /* 通过设置 font-size 来改变图标大小 */
+            width: 1em; height: 1em;
+            /* 图标和文字相邻时，垂直对齐 */
+            vertical-align: -0.15em;
+            /* 通过设置 color 来改变 SVG 的颜色/fill */
+            fill: currentColor;
+            /* path 和 stroke 溢出 viewBox 部分在 IE 下会显示
+               normalize.css 中也包含这行 */
+            overflow: hidden;
+        }
+
+        .pulldownRefresh-caption-icon{
+            font-size: 18px;
+        }
+        .pulldownRefresh-caption-icon-spinner{
+            display: none;
+
+            -webkit-transition: -webkit-transform 0.3s ease-in;
+            -webkit-transform: rotate(180deg);
+            -webkit-animation: spinner-spin 1s step-end infinite;
+
+            transition: -webkit-transform 0.3s ease-in;
+            transform: rotate(180deg);
+            animation: spinner-spin 1s step-end infinite;
+        }
+        @-webkit-keyframes spinner-spin
+        {
+            0%
+            {
+                -webkit-transform: rotate(0deg);
+            }
+
+            8.33333333%
+            {
+                -webkit-transform: rotate(30deg);
+            }
+
+            16.66666667%
+            {
+                -webkit-transform: rotate(60deg);
+            }
+
+            25%
+            {
+                -webkit-transform: rotate(90deg);
+            }
+
+            33.33333333%
+            {
+                -webkit-transform: rotate(120deg);
+            }
+
+            41.66666667%
+            {
+                -webkit-transform: rotate(150deg);
+            }
+
+            50%
+            {
+                -webkit-transform: rotate(180deg);
+            }
+
+            58.33333333%
+            {
+                -webkit-transform: rotate(210deg);
+            }
+
+            66.66666667%
+            {
+                -webkit-transform: rotate(240deg);
+            }
+
+            75%
+            {
+                -webkit-transform: rotate(270deg);
+            }
+
+            83.33333333%
+            {
+                -webkit-transform: rotate(300deg);
+            }
+
+            91.66666667%
+            {
+                -webkit-transform: rotate(330deg);
+            }
+
+            100%
+            {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        @keyframes spinner-spin
+        {
+            0%
+            {
+                transform: rotate(0deg);
+            }
+
+            8.33333333%
+            {
+                transform: rotate(30deg);
+            }
+
+            16.66666667%
+            {
+                transform: rotate(60deg);
+            }
+
+            25%
+            {
+                transform: rotate(90deg);
+            }
+
+            33.33333333%
+            {
+                transform: rotate(120deg);
+            }
+
+            41.66666667%
+            {
+                transform: rotate(150deg);
+            }
+
+            50%
+            {
+                transform: rotate(180deg);
+            }
+
+            58.33333333%
+            {
+                transform: rotate(210deg);
+            }
+
+            66.66666667%
+            {
+                transform: rotate(240deg);
+            }
+
+            75%
+            {
+                transform: rotate(270deg);
+            }
+
+            83.33333333%
+            {
+                transform: rotate(300deg);
+            }
+
+            91.66666667%
+            {
+                transform: rotate(330deg);
+            }
+
+            100%
+            {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script src="iconfont.js"></script>
+</head>
+<body>
+<div class="pulldownRefresh" id="pulldownRefresh">
+    <div class="pulldownRefresh-caption pulldownRefresh-pulldown-caption" id="pulldownRefresh-pulldown-caption">
+        <svg class="icon pulldownRefresh-caption-icon" id="pulldownRefresh-pulldown-caption-icon-pulldown" aria-hidden="true">
+            <use xlink:href="#icon-pulldown"></use>
+        </svg>
+        <svg class="icon pulldownRefresh-caption-icon pulldownRefresh-caption-icon-spinner" id="pulldownRefresh-pulldown-caption-icon-spinner" aria-hidden="true">
+            <use xlink:href="#icon-spinner"></use>
+        </svg>
+        <i class="pulldownRefresh-pulldown-caption-text" id="pulldownRefresh-pulldown-caption-text">下拉可以刷新</i>
+    </div>
+    <div class="pulldownRefresh-container" id="pulldownRefresh-container">
+        <ul id="list">
+            <li>list 1</li>
+            <li>list 2</li>
+            <li>list 3</li>
+            <li>list 4</li>
+            <li>list 5</li>
+        </ul>
+    </div>
+    <div class="pulldownRefresh-caption pulldownRefresh-pullup-caption" id="pulldownRefresh-pullup-caption">
+        <svg class="icon pulldownRefresh-caption-icon pulldownRefresh-caption-icon-spinner" id="pulldownRefresh-pullup-caption-icon-spinner" aria-hidden="true">
+            <use xlink:href="#icon-spinner"></use>
+        </svg>
+        <i class="pulldownRefresh-pullup-caption-text" id="pulldownRefresh-pullup-caption-text">上拉加载</i>
+    </div>
+</div>
+<script src="pulldownRefresh.js"></script>
+<script>
+    var loadTime=0;
+
+    pulldownRefresh.init({
+        down:{
+            contentdown:'',
+            contentover:'',
+            contentrefresh:'',
+            callback:function () {
+                setTimeout(function () {
+                    var li=document.createElement('LI');
+                    li.appendChild(document.createTextNode("这是新段落"+Math.random()*10));
+
+                    document.getElementById('list').appendChild(li);
+                    pulldownRefresh.endPulldownToRefresh();
+                    pulldownRefresh.refresh();
+                    loadTime=0;
+                },2000);
+            }
+        },
+        up:{
+            callback:function () {
+                loadTime++;
+
+                var li=document.createElement('LI');
+                li.appendChild(document.createTextNode("这是新段落"+Math.random()*10));
+
+                setTimeout(function () {
+                    document.getElementById('list').appendChild(li);
+
+                    if(loadTime==2){
+                        pulldownRefresh.endPullupToRefresh(true);
+                    }else if(loadTime==1){
+                        console.log('ajax error!');
+                        pulldownRefresh.hidePullupCaption();
+                    }else{
+                        pulldownRefresh.endPullupToRefresh();
+                    }
+                },2000);
+
+
+            }
+        }
+    });
+
+    pulldownRefresh.showPullupCaption();
+
+</script>
+</body>
+</html>
