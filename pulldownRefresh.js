@@ -30,6 +30,14 @@
                 callback:function () {
 
                 }
+            },
+            up:{
+                contentup:'',
+                contentover:'',
+                contentrefresh:'',
+                callback:function () {
+
+                }
             }
         };
         var mergeOption;
@@ -37,7 +45,8 @@
         /*初始化*/
         function init(options) {
             if (options) {
-                mergeOption=options;
+                mergeOption=deepClone(defaultOption,options);
+
                 if(document && document.getElementsByTagName && document.getElementById && document.body) {
                     //dom已经加载完成
                     onDOMReady();
@@ -344,6 +353,29 @@
             }
 
             return result;
+        }
+
+        function deepClone(obj,targetObj){
+            //把targetObj引用赋值给obj
+            for(var key in obj){
+                obj[key]= isObject(targetObj[key]) ? deepClone(obj[key],targetObj[key]):targetObj[key];
+                if(isArray(obj[key])){
+                    obj[key]=[];
+                    obj[key]=obj[key].concat(targetObj[key]);
+                }
+            }
+            return obj;
+        }
+        function isArray(v){
+            return toString.apply(v) === '[object Array]';
+        }
+        function isObject(v){
+            if(typeof v == 'object'){
+                if(!isArray(v)){
+                    return true;
+                }
+            }
+            return false;
         }
 
         return {
