@@ -3,8 +3,6 @@
     function pulldownRefresh(){
 
         var touchStartPoint;
-        var pullDownDistance=70;
-        var pullUpDistance=50;
         var $pulldownRefresh;
         var $pulldownRefreshContainer;
 
@@ -24,17 +22,21 @@
 
         var defaultOption={
             down:{
-                contentdown:'',
-                contentover:'',
-                contentrefresh:'',
+                length:'50',
+                damping:'1',
+                contentdown:'下拉可以刷新',
+                contentover:'释放立即刷新',
+                contentrefresh:'正在刷新...',
                 callback:function () {
 
                 }
             },
             up:{
-                contentup:'',
-                contentover:'',
-                contentrefresh:'',
+                length:'50',
+                damping:'1',
+                contentup:'上拉显示更多',
+                contentnomore:'没有更多数据了',
+                contentrefresh:'正在加载...',
                 callback:function () {
 
                 }
@@ -110,7 +112,7 @@
             var iconRotate;
 
             if(touchMoveDistance>0){
-                iconRotate=((touchMoveDistance/pullDownDistance)>1?1:(touchMoveDistance/pullDownDistance))*180;
+                iconRotate=((touchMoveDistance/mergeOption.down.length)>1?1:(touchMoveDistance/mergeOption.down.length))*180;
             }else{
                 iconRotate=0;
             }
@@ -118,16 +120,16 @@
             $pulldownRefreshPulldownCaptionIconPulldown.style['-webkit-transform']='rotate('+iconRotate+'deg)';
 
             //下拉，如果滑动距离大于某个阈值，则将触发pullDown回调标记设置为true，当touchend的时候就触发回调
-            if (touchMoveDistance>0 && touchMoveDistance>pullDownDistance) {
+            if (touchMoveDistance>0 && touchMoveDistance>mergeOption.down.length) {
                 triggerPullDown=true;
-                $pulldownRefreshPulldownCaptionText.innerHTML='释放立即刷新';
+                $pulldownRefreshPulldownCaptionText.innerHTML=mergeOption.down.contentover;
             }else{
                 triggerPullDown=false;
-                $pulldownRefreshPulldownCaptionText.innerHTML='下拉可以刷新';
+                $pulldownRefreshPulldownCaptionText.innerHTML=mergeOption.down.contentdown;
             }
 
             //上拉，如果滑动距离大于某个阈值，则将触发pullUp回调标记设置为true，当touchend的时候就触发回调
-            if (!isPullupFinish && touchMoveDistance<0 && Math.abs(touchMoveDistance)>pullUpDistance) {
+            if (!isPullupFinish && touchMoveDistance<0 && Math.abs(touchMoveDistance)>mergeOption.up.length) {
                 triggerPullUp=true;
             }else{
                 triggerPullUp=false;
@@ -141,12 +143,12 @@
 
             if(touchMoveDistance>0){
                 //下拉
-                $pulldownRefreshContainer.style['-webkit-transform']='translate(0,'+Math.sqrt(touchMoveDistance)*10+'px)';
-                $pulldownRefreshPullupCaption.style['-webkit-transform']='translate(0,'+Math.sqrt(touchMoveDistance)*10+'px)';
+                $pulldownRefreshContainer.style['-webkit-transform']='translate(0,'+Math.sqrt(touchMoveDistance)*10/mergeOption.down.damping+'px)';
+                $pulldownRefreshPullupCaption.style['-webkit-transform']='translate(0,'+Math.sqrt(touchMoveDistance)*10/mergeOption.down.damping+'px)';
             }else{
                 //上拉
-                $pulldownRefreshContainer.style['-webkit-transform']='translate(0,-'+Math.sqrt(Math.abs(touchMoveDistance))*5+'px)';
-                $pulldownRefreshPullupCaption.style['-webkit-transform']='translate(0,-'+Math.sqrt(Math.abs(touchMoveDistance))*5+'px)';
+                $pulldownRefreshContainer.style['-webkit-transform']='translate(0,-'+Math.sqrt(Math.abs(touchMoveDistance))*5/mergeOption.up.damping+'px)';
+                $pulldownRefreshPullupCaption.style['-webkit-transform']='translate(0,-'+Math.sqrt(Math.abs(touchMoveDistance))*5/mergeOption.up.damping+'px)';
             }
 
             requestAnimationFrameId=window.requestAnimationFrame(setAnimationFrame);
@@ -174,7 +176,7 @@
                 $pulldownRefreshPulldownCaptionIconPulldown.style.display='none';
                 $pulldownRefreshPulldownCaptionIconSpinner.style.display='inline-block';
 
-                $pulldownRefreshPulldownCaptionText.innerHTML='正在刷新...';
+                $pulldownRefreshPulldownCaptionText.innerHTML=mergeOption.down.contentrefresh;
                 mergeOption.down && mergeOption.down.callback && mergeOption.down.callback();
                 triggerPullDown=false;
             }else{
@@ -186,7 +188,7 @@
                 //改变pullup caption 为正在加载
                 $pulldownRefreshPullupCaptionIconSpinner.style.display='inline-block';
 
-                $pulldownRefreshPullupCaptionText.innerHTML='正在加载...';
+                $pulldownRefreshPullupCaptionText.innerHTML=mergeOption.up.contentrefresh;
                 mergeOption.up && mergeOption.up.callback && mergeOption.up.callback();
                 triggerPullUp=false;
             }
@@ -205,15 +207,15 @@
             if(finished){
                 isPullupFinish=true;
                 $pulldownRefreshPullupCaptionIconSpinner.style.display='none';
-                $pulldownRefreshPullupCaptionText.innerHTML='没有更多了';
+                $pulldownRefreshPullupCaptionText.innerHTML=mergeOption.up.contentnomore;
             }else{
                 $pulldownRefreshPullupCaptionIconSpinner.style.display='none';
-                $pulldownRefreshPullupCaptionText.innerHTML='上拉加载';
+                $pulldownRefreshPullupCaptionText.innerHTML=mergeOption.up.contentup;
             }
         }
         function refresh() {
             isPullupFinish=false;
-            $pulldownRefreshPullupCaptionText.innerHTML='上拉加载';
+            $pulldownRefreshPullupCaptionText.innerHTML=mergeOption.up.contentup;
             $pulldownRefreshPullupCaptionIconSpinner.style.display='none';
 
             setTimeout(function () {
@@ -245,6 +247,10 @@
             $pulldownRefreshPullupCaption=$('#pulldownRefresh-pullup-caption');
             $pulldownRefreshPullupCaptionText=$('#pulldownRefresh-pullup-caption-text');
             $pulldownRefreshPullupCaptionIconSpinner=$('#pulldownRefresh-pullup-caption-icon-spinner');
+
+            $pulldownRefreshPulldownCaptionText.innerHTML=mergeOption.down.contentdown;
+            $pulldownRefreshPullupCaptionText.innerHTML=mergeOption.up.contentup;
+
 
             //准备工作已完成
             initEvents();
@@ -358,7 +364,13 @@
         function deepClone(obj,targetObj){
             //把targetObj引用赋值给obj
             for(var key in obj){
-                obj[key]= isObject(targetObj[key]) ? deepClone(obj[key],targetObj[key]):targetObj[key];
+                if(isObject(targetObj[key])){
+                    obj[key] = deepClone(obj[key],targetObj[key]);
+                }else if(targetObj[key]){
+                    obj[key] = targetObj[key];
+                }else{
+                    obj[key] = obj[key];
+                }
                 if(isArray(obj[key])){
                     obj[key]=[];
                     obj[key]=obj[key].concat(targetObj[key]);
