@@ -192,7 +192,7 @@
         <svg class="icon pulldownRefresh-caption-icon pulldownRefresh-caption-icon-spinner" id="pulldownRefresh-pulldown-caption-icon-spinner" aria-hidden="true">
             <use xlink:href="#icon-spinner"></use>
         </svg>
-        <i class="pulldownRefresh-pulldown-caption-text" id="pulldownRefresh-pulldown-caption-text">下拉可以刷新</i>
+        <i class="pulldownRefresh-pulldown-caption-text" id="pulldownRefresh-pulldown-caption-text"></i>
     </div>
     <div class="pulldownRefresh-container" id="pulldownRefresh-container">
         <ul id="list">
@@ -207,7 +207,7 @@
         <svg class="icon pulldownRefresh-caption-icon pulldownRefresh-caption-icon-spinner" id="pulldownRefresh-pullup-caption-icon-spinner" aria-hidden="true">
             <use xlink:href="#icon-spinner"></use>
         </svg>
-        <i class="pulldownRefresh-pullup-caption-text" id="pulldownRefresh-pullup-caption-text">上拉加载</i>
+        <i class="pulldownRefresh-pullup-caption-text" id="pulldownRefresh-pullup-caption-text"></i>
     </div>
 </div>
 <script src="pulldownRefresh.js"></script>
@@ -216,9 +216,11 @@
 
     pulldownRefresh.init({
         down:{
-            contentdown:'',
-            contentover:'',
-            contentrefresh:'',
+            length:50,
+            damping:5,
+            contentdown:'下拉可以刷新',
+            contentover:'释放立即刷新',
+            contentrefresh:'正在刷新...',
             callback:function () {
                 setTimeout(function () {
                     var li=document.createElement('LI');
@@ -232,6 +234,11 @@
             }
         },
         up:{
+            length:50,
+            damping:2,
+            contentup:'上拉显示更多',
+            contentnomore:'没有更多数据了',
+            contentrefresh:'正在刷新...',
             callback:function () {
                 loadTime++;
 
@@ -241,9 +248,9 @@
                 setTimeout(function () {
                     document.getElementById('list').appendChild(li);
 
-                    if(loadTime==2){
+                    if(loadTime==1){
                         pulldownRefresh.endPullupToRefresh(true);
-                    }else if(loadTime==1){
+                    }else if(loadTime==2){
                         console.log('ajax error!');
                         pulldownRefresh.hidePullupCaption();
                     }else{
