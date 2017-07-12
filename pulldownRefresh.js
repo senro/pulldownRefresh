@@ -22,8 +22,8 @@
 
         var defaultOption={
             down:{
-                length:'50',
-                damping:'1',
+                length:50,
+                damping:1,
                 contentdown:'下拉可以刷新',
                 contentover:'释放立即刷新',
                 contentrefresh:'正在刷新...',
@@ -32,8 +32,8 @@
                 }
             },
             up:{
-                length:'50',
-                damping:'1',
+                length:50,
+                damping:1,
                 contentup:'上拉显示更多',
                 contentnomore:'没有更多数据了',
                 contentrefresh:'正在加载...',
@@ -48,6 +48,10 @@
         function init(options) {
             if (options) {
                 mergeOption=deepClone(defaultOption,options);
+                mergeOption.down.length = Number(mergeOption.down.length);
+                mergeOption.down.damping = Number(mergeOption.down.damping);
+                mergeOption.up.length = Number(mergeOption.up.length);
+                mergeOption.up.damping = Number(mergeOption.up.damping);
 
                 if(document && document.getElementsByTagName && document.getElementById && document.body) {
                     //dom已经加载完成
@@ -364,13 +368,7 @@
         function deepClone(obj,targetObj){
             //把targetObj引用赋值给obj
             for(var key in obj){
-                if(isObject(targetObj[key])){
-                    obj[key] = deepClone(obj[key],targetObj[key]);
-                }else if(targetObj[key]){
-                    obj[key] = targetObj[key];
-                }else{
-                    obj[key] = obj[key];
-                }
+                obj[key]= isObject(targetObj[key]) ? deepClone(obj[key],targetObj[key]):targetObj[key];
                 if(isArray(obj[key])){
                     obj[key]=[];
                     obj[key]=obj[key].concat(targetObj[key]);
